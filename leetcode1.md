@@ -76,7 +76,7 @@ int* addToArrayForm(int* num, int numSize, int k, int* returnSize){
 
 
 
-
+//µÚ¶þÖÖ
 int* addToArrayForm(int* num, int numSize, int k, int* returnSize){
       int x=k;
       int i=0,j=0;

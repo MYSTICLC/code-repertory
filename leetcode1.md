@@ -1,3 +1,4 @@
+leetcode 训练2
 数组相加合并
 //第一种开辟n+1长度数组的平均效率更优，因为减小了遍历长度和空间成本
 int* addToArrayForm(int* num, int numSize, int k, int* returnSize){

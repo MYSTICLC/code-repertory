@@ -1,0 +1,216 @@
+206.反转链表
+
+struct ListNode* reverseList(struct ListNode* head){
+      struct ListNode * p=head;
+      struct ListNode * s=NULL;
+      struct ListNode *q=NULL;
+      if(p==NULL||p->next==NULL)
+      return head;
+      s=p->next;
+      p->next=NULL;
+      while(s!=NULL)
+      {
+          q=s;
+          s=s->next;
+          q->next=head;
+          
+          head=q;
+      }
+      return head;
+}
+//相当于把拷贝后反转的链表返回
+
+203.移除链表元素
+
+struct ListNode* removeElements(struct ListNode* head, int val){
+    struct ListNode * p = head;
+    struct ListNode * q =NULL;
+    if(head==NULL)
+    {
+        return head;
+    }
+    while(p!=NULL)
+    {
+        if(p->val!=val)
+        {
+            q=p;
+            p=p->next;
+        }
+        else
+        {
+           if(q==NULL && p->next==NULL)
+           {
+               head=NULL;
+               p=NULL;
+           }
+           else if(q==NULL && p->next!=NULL)
+           {
+               head=p->next;
+               p=head;
+           }
+           else
+           {
+               q->next=p->next;
+               p=q;
+           }
+        }
+    }
+    return head;
+}
+
+876.链表的中间结点
+struct ListNode* middleNode(struct ListNode* head){
+      int l=0;
+      int n=0;
+      struct ListNode * p=head;
+      while(p!=NULL)
+      {
+          l=l+1;
+          p=p->next;
+      }
+      n=l/2;
+      p=head;
+      while(n!=0)
+      {
+          p=p->next;
+          n--;
+      }
+      return p;
+}
+
+输入一个链表，输出该链表中倒数第k个结点。
+struct ListNode* FindKthToTail(struct ListNode* pListHead, int k ) 
+{
+    struct ListNode * p=pListHead;
+    int l=0;
+    int n=0;
+    while(p!=NULL)
+    {
+        l++;
+        p=p->next;
+    }
+    if(k<=0||k>l)
+       return NULL;
+    else
+    {
+        n=l-k;
+    p=pListHead;
+    while(n!=0)
+    {
+        p=p->next;
+        n--;
+    }
+    return p;
+    }
+    // write code here
+}
+
+21.合并两个有序链表
+struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2){
+   struct ListNode * p=NULL;
+   struct ListNode * q=NULL;
+   struct ListNode * s=NULL;
+   if(list1==NULL&&list2==NULL)
+      return NULL;
+   else if(list1==NULL && list2!=NULL)
+      return list2;
+   else if(list2==NULL && list1!=NULL)
+      return list1;
+   p=list1;
+   q=list2;
+  if(q!=NULL && p!=NULL)
+  {
+       while(q!=NULL)
+   {
+       if(q->val<p->val)
+       {
+           s=q;
+           q=q->next;
+           s->next=NULL;
+           s->next=p;
+           list1=s;
+           p=s;
+       }
+       else
+       {
+           s=q;
+           q=q->next;
+           s->next=NULL;
+           while(p->next!=NULL &&s->val>=p->next->val)
+           {
+               p=p->next;
+           }
+           if(p->next==NULL)
+           {
+               p->next=s;
+           }
+           else
+           {
+               s->next=p->next;
+               p->next=s;
+           }
+           p=list1;
+       }
+   }
+  }
+   return list1;
+}
+
+面试题02.04 分割链表
+思路：类似于链表排序，将小于x的结点排一个链表，大于等于x的结点排一个链表，最后链接即可，也参考了题解的双链表思路。一开始的思路可行，但是容易出现各种越界错误，思路繁杂不适用。
+struct ListNode* partition(struct ListNode* head, int x)
+{
+       struct ListNode * p = head;
+       struct ListNode * q = NULL;
+       struct ListNode * s = NULL;
+       struct ListNode * d = NULL;
+       struct ListNode *head1=NULL;
+       struct ListNode *head2=NULL;
+        if(head==NULL||head->next==NULL)
+            return head;
+        else
+        {
+           while(p!=NULL)
+           {
+               if(p->val<x &&s==NULL)
+               {
+                  q=p;
+                  p=p->next;
+                  q->next=NULL;
+                  s=q;
+                  head1=s;
+               }
+               else if(p->val<x&&s!=NULL)
+               {
+                   q=p;
+                   p=p->next;
+                   q->next=NULL;
+                   s->next=q;
+                   s=q;
+               }
+               else if(p->val>=x&&d==NULL)
+               {
+                   q=p;
+                   p=p->next;
+                   q->next=NULL;
+                   d=q;
+                   head2=d;
+               }
+               else
+               {
+                   q=p;
+                   p=p->next;
+                   q->next=NULL;
+                   d->next=q;
+                   d=q;
+               }
+           }
+        }
+    if(head1==NULL)
+      return head2;
+    else
+    {
+        s->next=head2;
+        return head1;
+    }
+}

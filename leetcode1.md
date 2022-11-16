@@ -194,10 +194,37 @@ void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n)
     }
 }
 
+优化：
+int * tmp=(int*)malloc(sizeof(int)*(m+n));
+int i=0,j=0;
+int k=0;
+while(i<m && j<n)
+{
+    if(nums[i]<nums[j])
+     {
+       tmp[k++]=nums1[i++];
+     }
+    else
+    {
+       tmp[k++]=nums2[j++];
+     }
+}
+
+while(i<m)
+     tmp[k++]=nums1[i++];
+while(j<n）
+     tmp[k++]=nums2[j++];
+
+memcpy(nums1,tmp,sizeof(int)*(m+n));
+free(tmp);
+tmp=NULL;
+
+
 2.直接将第二个数组充入第一个数组再排序，可节省空间和时间(可能节省时间)
 void merge(int* nums1, int nums1Size, int m, int* nums2, int nums2Size, int n)
 {
     int t;
+//memcpy(nums1+m,nums2,sizeof(int)*n);拷贝数组2到数组1
     for(int i=m;i<m+n;i++)
     {
         nums1[i]=nums2[i-m];
@@ -265,26 +292,6 @@ int removeDuplicates(int* nums, int numsSize)
 不构建新指针只使用下标的写法：
 int removeDuplicates(int* nums, int numsSize)
 {
-  /*int *p=nums;
-  int *p1=p+1;
-  int n=0;//用来记录交换次数
-  int k=1;
-  while(k<numsSize)
-  {
-      if((*p)!=(*p1))
-      {
-          *(p+1)=*p1;
-          p++;
-          p1++;
-          n++;
-          k++;
-      }
-      else if(*p==*p1)
-      {
-          p1++;
-          k++;
-      }
-  }*/
   int p=0;
   int q=1;
   while(q<numsSize)
@@ -302,6 +309,23 @@ int removeDuplicates(int* nums, int numsSize)
   }
   numsSize=p+1;
   return numsSize;
+}
+
+3.双指针比较前项法
+int removeDuplicates(int* nums, int numsSize)
+{
+    if(numsSize<=1)
+    return numsSize;
+
+    int t= 1;//第一个元素不可能是重复数据
+    for(int i=1;i<numsSize;i++)
+    {
+        if(nums[i]!=nums[i-1])
+        {
+            nums[t++]=nums[i];
+        }
+    }
+    return t;
 }
 
 删除数组元素val
@@ -348,7 +372,7 @@ int removeElement(int* nums, int numsSize, int val)
           }
           if(nums[i]==val)
           {
-              i=i-1;
+              i=i-1;//哪怕i初始值为0也不影响，当i变为-1结束这次循环后也会+1变为0，又从零开始判断循环，也可以把i++的循环条件放到下面来
               numsSize--;
           }
           else
@@ -359,3 +383,5 @@ int removeElement(int* nums, int numsSize, int val)
   }
   return numsSize;
 }
+
+3.尾指针与对应指针交换法，但是会改变元素顺序

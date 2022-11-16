@@ -1,0 +1,104 @@
+OR36 链表的回文结构
+1.解法1 创建数组存储链表元素，然后双指针遍历数组比较
+class PalindromeList {
+public:
+    bool chkPalindrome(ListNode* A) {
+        // write code here
+        ListNode * p=A;
+        int arr[900];
+        int n=0;
+        while(p!=NULL)
+        {
+            arr[n++]=p->val;
+            p=p->next;
+        }
+        int t=0;
+        int x=n-1;
+        while(t<x)
+        {
+            if(arr[t]!=arr[x])
+            {
+                return false;
+            }
+            t++;
+            x--;
+        }
+        return true;
+    }
+};
+
+2.解法2 找到中间结点，将中间结点之后的链表反转，并将原链表于中间结点断开，在进行遍历比较，若有不同则返回false，否则返回true
+
+
+160.相交链表
+解法一.尾部地址比较法
+struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB) {
+    struct ListNode *a[30000];
+    struct ListNode *b[30000];
+    struct ListNode * p=headA;
+    struct ListNode * q=headB;
+    int n=0;
+    while(p!=NULL)
+    {
+        a[n++]=p;
+        p=p->next;
+    }
+    int i=0;
+    while(q!=NULL)
+    {
+        b[i++]=q;
+        q=q->next;
+    }
+    n=n-1;//指向最后一个有效元素
+    i=i-1;
+    if(a[n]==b[i])
+    {
+
+        while(n>0 && i>0 && a[n-1]==b[i-1])
+        {
+              n--;
+              i--;
+        }
+       p=a[n];
+       return p;
+    }
+    else
+      return NULL;
+}
+
+141.环形链表
+思路一：利用快慢指针来确定是否有环
+bool hasCycle(struct ListNode *head) {
+    struct ListNode * p=head;
+    struct ListNode * q=head;
+    while(q!=NULL && q->next!=NULL)
+    {
+        p=p->next;
+        q=q->next->next;//第一次判断不能从出发结点开始
+        if(q==p)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+思路二：可以只用单指针，利用指针数组存储每个结点对应的地址，指针每往后移一次，就与指针数组进行一次遍历比较，如果存在相等的情况就返回true，如果指针后移后为空，则返回false。
+
+142.环形链表二
+思路一：单指针加数组
+struct ListNode *detectCycle(struct ListNode *head) {
+    struct ListNode * a[10000];
+    struct ListNode * p=head;
+    int n=0;
+    while(p!=NULL)
+    {
+        a[n++]=p;
+        p=p->next;
+        for(int i =0;i<n;i++)
+        {
+            if(a[i]==p)
+            return a[i];
+        }
+    }
+    return NULL;
+}

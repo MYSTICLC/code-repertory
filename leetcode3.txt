@@ -22,6 +22,7 @@ struct ListNode* reverseList(struct ListNode* head){
 
 203.移除链表元素
 
+思路一：
 struct ListNode* removeElements(struct ListNode* head, int val){
     struct ListNode * p = head;
     struct ListNode * q =NULL;
@@ -51,14 +52,16 @@ struct ListNode* removeElements(struct ListNode* head, int val){
            else
            {
                q->next=p->next;
-               p=q;
+               p=q->next;
            }
         }
     }
     return head;
 }
+思路二：递归调用函数
 
 876.链表的中间结点
+思路一:
 struct ListNode* middleNode(struct ListNode* head){
       int l=0;
       int n=0;
@@ -77,8 +80,11 @@ struct ListNode* middleNode(struct ListNode* head){
       }
       return p;
 }
+思路二:
+快慢指针找中间结点。
 
-输入一个链表，输出该链表中倒数第k个结点。
+牛客:输入一个链表，输出该链表中倒数第k个结点。
+思路一:
 struct ListNode* FindKthToTail(struct ListNode* pListHead, int k ) 
 {
     struct ListNode * p=pListHead;
@@ -91,7 +97,7 @@ struct ListNode* FindKthToTail(struct ListNode* pListHead, int k )
     }
     if(k<=0||k>l)
        return NULL;
-    else
+    else 
     {
         n=l-k;
     p=pListHead;
@@ -104,6 +110,8 @@ struct ListNode* FindKthToTail(struct ListNode* pListHead, int k )
     }
     // write code here
 }
+思路二:
+双指针法，一个指针领先k步。   
 
 21.合并两个有序链表
 struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2){
@@ -157,7 +165,7 @@ struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2){
 }
 
 面试题02.04 分割链表
-思路：类似于链表排序，将小于x的结点排一个链表，大于等于x的结点排一个链表，最后链接即可，也参考了题解的双链表思路。一开始的思路可行，但是容易出现各种越界错误，思路繁杂不适用。
+思路：类似于链表排序，将小于x的结点排一个链表，大于等于x的结点排一个链表，最后链接即可，也参考了题解的双链表思路。一开始的思路可行，但是容易出现各种越界错误，思路繁杂不适用。//如果选择用头结点代表头指针操作会方便一些，但是会造成空间复杂度上升
 struct ListNode* partition(struct ListNode* head, int x)
 {
        struct ListNode * p = head;

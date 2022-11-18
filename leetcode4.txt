@@ -27,7 +27,7 @@ public:
     }
 };
 
-2.解法2 找到中间结点，将中间结点之后的链表反转，并将原链表于中间结点断开，在进行遍历比较，若有不同则返回false，否则返回true
+2.解法2 找到中间结点，将中间结点之后的链表反转，并将原链表于中间结点断开，在进行遍历比较，若有不同则返回false，否则返回true，判断完之后再恢复成原链表。
 
 
 160.相交链表
@@ -65,6 +65,8 @@ struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *he
     else
       return NULL;
 }
+解法2:
+分别求出两者的长度，然后让长的一个链表的指针先向后移动两个链表长度差值的步数，从而使两者处于同一长度起步点，向后移动判断是否相交。
 
 141.环形链表
 思路一：利用快慢指针来确定是否有环
@@ -102,3 +104,87 @@ struct ListNode *detectCycle(struct ListNode *head) {
     }
     return NULL;
 }
+思路二：先用快慢指针判断是否有环，当确定有环后，将快指针返回链表头，并用慢指针的速度和慢指针一起next，初始点离入环点的步数刚好能使相遇点走到入环点。
+
+138.复制带随机指针的链表
+
+思路一：借助数组进行拷贝，新创建结点将原节点的值和random指向的位置都进行拷贝从而达到深拷贝的效果
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *next;
+ *     struct Node *random;
+ * };
+ */
+struct Node * _BuyNode(int val)
+{
+    struct Node * s =(struct Node*)malloc(sizeof(struct Node));
+    s->val=val;
+    s->next=NULL;
+    s->random=NULL;
+    return s;
+}
+
+struct Node* copyRandomList(struct Node* head) {
+    struct Node * r[1000];
+    struct Node * p=head;
+    struct Node * q=NULL;
+    struct Node * s=NULL;
+    int pos[1000];//pos用来存储random指向的位置
+    int x=0;
+    int i=0;//i用于存储链表有效长度
+    if(p==NULL)
+      return q;
+    while(p!=NULL)
+    {
+        if(p->random==NULL)
+        {
+            pos[i++]=-9999;
+        }
+        else
+        {
+            s=head;
+            for(int j =0;s!=NULL;j++)
+            {
+                if(p->random== s)
+                {
+                    pos[i++]=j;
+                    break;
+                }
+                s=s->next;
+            }
+        }
+        p=p->next;
+    }
+    p=head;
+    for(int j=0;j<i;j++)//新创建结点放到数组中，并赋对应值
+    {
+        x=p->val;
+        p=p->next;
+        q=_BuyNode(x);
+        r[j]=q;
+        q=NULL;
+    }
+    for(int j =0;j<i;j++)//此处如果想用q=q->next则需先链接新创建的各结点
+    {
+        q=r[j];
+        if(pos[j]==-9999)
+        {
+            q->random=NULL;
+        }
+        else
+        {
+            q->random=r[(pos[j])];
+        }
+    }
+    q=r[0];
+    for(int j=1;j<i;j++)
+    {
+        q->next=r[j];
+        q=q->next;
+    }
+    return r[0];//r[0]为新链表的起始结点
+} 
+思路二：首先赋值原始结点的值创建新结点，同时把<N,N'>的配对信息放到一个哈希表中，第二步还是设置复制链表的random，如果在N中random指向S，那么对应N'就应该指向S‘，由于有了哈希表，我们可以用O(1)的时间根据S找到S’
+思路三：在N后创建N‘，N指向S，N指向S->next，即S’,因为S‘一定是S->next,再断开链表或者删除原链表的结点。 

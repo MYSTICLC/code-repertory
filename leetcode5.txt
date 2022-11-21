@@ -1,0 +1,424 @@
+622.设计循环队列
+typedef struct MyCircularQueue{
+    int * base;
+    int capacity;
+    int front;
+    int rear;
+} MyCircularQueue;
+
+
+MyCircularQueue* myCircularQueueCreate(int k) 
+{
+    static MyCircularQueue p;
+    MyCircularQueue * obj=NULL;
+    p.capacity=k;
+    p.base=(int *)malloc(sizeof(int)*(p.capacity+1));
+    p.front=p.rear=0;
+    obj = &p;
+    return obj;
+}
+
+bool myCircularQueueIsEmpty(MyCircularQueue* obj) 
+{
+    if(obj->front==obj->rear)
+        return true;
+    else
+        return false;
+}
+
+bool myCircularQueueIsFull(MyCircularQueue* obj) 
+{
+    return (obj->rear+1)%(obj->capacity+1)==obj->front;
+}
+
+
+bool myCircularQueueEnQueue(MyCircularQueue* obj, int value)
+{
+    if(myCircularQueueIsFull(obj))
+        return false;
+    else
+    {
+        obj->base[obj->rear]=value;
+        obj->rear=(obj->rear+1)%(obj->capacity+1);
+        return true;
+    }
+}
+
+bool myCircularQueueDeQueue(MyCircularQueue* obj) 
+{
+    if(myCircularQueueIsEmpty(obj))
+        return false;
+    else
+    {
+        obj->front=(obj->front+1)%(obj->capacity+1);
+        return true;
+    }
+}
+
+int myCircularQueueFront(MyCircularQueue* obj) 
+{
+    if(myCircularQueueIsEmpty(obj))
+       return-1;
+    else
+    {
+        return obj->base[obj->front];
+    }
+}
+
+int myCircularQueueRear(MyCircularQueue* obj)
+{
+    if(myCircularQueueIsEmpty(obj))
+       return-1;
+    else
+    {
+        return obj->base[(obj->rear-1 + (obj->capacity+1))%(obj->capacity+1)];
+    }
+}
+
+void myCircularQueueFree(MyCircularQueue* obj)
+{
+     free(obj->base);
+     obj->capacity=obj->front=obj->rear=0;
+}
+
+232.用栈实现队列
+typedef struct StackNode
+{
+    int data;
+    struct StackNode * next;
+}StackNode;
+
+typedef struct Stack
+{
+   StackNode * head;
+}Stack;
+
+typedef struct MyQueue
+{
+   Stack en;
+   Stack ex;
+} MyQueue;
+
+void ListReverse(StackNode** plist)
+{
+    StackNode * p=NULL;
+    StackNode * q=NULL;
+    if(*plist == NULL||(*plist)->next==NULL)
+    return;
+    q = (*plist)->next;
+	(*plist)->next = NULL;
+	while (q != NULL)
+	{
+		p = q;
+		q = q->next;
+		p->next = (*plist);
+		(*plist) = p;
+	}
+}
+
+
+MyQueue* myQueueCreate() 
+{
+    MyQueue * obj=NULL;
+    static MyQueue p;
+    p.en.head=NULL;
+    p.ex.head=NULL;
+    obj=&p;
+    return obj;
+}
+
+bool myQueueEmpty(MyQueue*obj)
+{
+    if(obj->en.head==NULL&&obj->ex.head==NULL)
+       return true;
+    else 
+       return false;
+}
+
+void myQueuePush(MyQueue* obj, int x) 
+{
+    StackNode * s=(StackNode*)malloc(sizeof(StackNode));
+    s->data=x;
+    s->next=NULL;
+
+    if(obj->ex.head!=NULL)
+    {
+        ListReverse(&(obj->ex.head));
+        obj->en.head=obj->ex.head;
+        obj->ex.head=NULL;
+    }//同时只能有一个栈存在元素，如果要人队时出栈有元素，则将出栈中元素全部转到入栈中
+    if(obj->en.head==NULL)
+    {
+        obj->en.head=s;
+    }
+    else
+    {
+        s->next=obj->en.head;
+        obj->en.head=s;
+    }
+}
+
+int myQueuePop(MyQueue* obj) 
+{
+    int x;
+    if(obj->en.head!=NULL)
+    {
+        ListReverse(&(obj->en.head));
+        obj->ex.head=obj->en.head;
+        obj->en.head=NULL;
+    }//同时只能有一个栈存在元素，如果要出队时入栈有元素，则将入栈中元素全部转到出栈中
+    StackNode * p=NULL;
+    if(obj->ex.head==NULL)
+       return-1;
+    else
+    {
+        p=obj->ex.head;
+        obj->ex.head=p->next;
+        x=p->data;
+        free(p);
+    }
+    return x;
+}
+
+int myQueuePeek(MyQueue* obj) 
+{
+    if(myQueueEmpty(obj))
+       return -1;
+    if(obj->en.head!=NULL)
+    {
+       ListReverse(&(obj->en.head));
+       obj->ex.head=obj->en.head;
+       obj->en.head=NULL;
+    }
+    return obj->ex.head->data;
+}
+
+void myQueueFree(MyQueue* obj) 
+{
+    StackNode * p=NULL;
+    if(myQueueEmpty(obj))
+      return;
+    else
+    {
+        if(obj->en.head!=NULL)
+        {
+            while(obj->en.head!=NULL)
+            {
+                p=obj->en.head;
+                obj->en.head=obj->en.head->next;
+                free(p);
+            }
+        }
+        else
+        {
+             while(obj->ex.head!=NULL)
+            {
+                p=obj->ex.head;
+                obj->ex.head=obj->ex.head->next;
+                free(p);
+            }
+        }
+    }
+}
+
+225.用队列实现栈
+typedef struct QueueNode
+{
+    int data;
+    struct QueueNode *next;
+}QueueNode;
+
+typedef struct Queue
+{
+    QueueNode * front;
+    QueueNode * rear;
+}Queue;
+
+typedef struct MyStack
+{
+    Queue en;
+    Queue ex;
+} MyStack;
+
+void ListReverse(QueueNode** plist)
+{
+	QueueNode * p=NULL;
+    QueueNode * q=NULL;
+    if(*plist == NULL||(*plist)->next==NULL)
+    return;
+    q = (*plist)->next;
+	(*plist)->next = NULL;
+	while (q != NULL)
+	{
+		p = q;
+		q = q->next;
+		p->next = (*plist);
+		(*plist) = p;
+	}
+}
+
+MyStack* myStackCreate() 
+{
+   static MyStack p;
+   MyStack * obj=NULL;
+   p.en.front=p.en.rear=NULL;
+   p.ex.front=p.ex.rear=NULL;
+   obj=&p;
+   return obj;
+}
+
+bool myStackEmpty(MyStack* obj) 
+{
+    if(obj->en.front==NULL && obj->ex.front==NULL)
+        return true;
+    else 
+        return false;
+}
+
+void myStackPush(MyStack* obj, int x) 
+{
+   QueueNode * p=NULL;
+   QueueNode * s=(QueueNode*)malloc(sizeof(QueueNode));
+   s->data=x;
+   s->next=NULL;
+   if(obj->ex.front!=NULL)
+   {
+       p=obj->ex.front;
+       ListReverse(&p);
+       obj->ex.front=p;
+       while(p->next!=NULL)
+       {
+           p=p->next;
+       }
+       obj->ex.rear=p;
+       obj->en.front=obj->ex.front;
+       obj->en.rear=obj->ex.rear;
+       obj->ex.front=obj->ex.rear=NULL;
+   }
+   if(obj->en.front==NULL)
+   {
+       obj->en.front=s;
+       obj->en.rear=s;
+   }
+   else
+   {
+       obj->en.rear->next=s;
+       obj->en.rear=obj->en.rear->next;
+   }
+}
+
+int myStackPop(MyStack* obj) 
+{
+    QueueNode * p=NULL;
+    int x;
+    if(obj->en.front!=NULL)
+   {
+       p=obj->en.front;
+       ListReverse(&p);
+       obj->en.front=p;
+       while(p->next!=NULL)
+       {
+           p=p->next;
+       }
+       obj->en.rear=p;
+       obj->ex.front=obj->en.front;
+       obj->ex.rear=obj->en.rear;
+       obj->en.front=obj->en.rear=NULL;
+   }
+   if(obj->ex.front==NULL)
+       return -1;
+   else
+   {
+       p=obj->ex.front;
+       obj->ex.front=p->next;
+       x=p->data;
+       free(p);
+   }
+   return x;
+}
+
+int myStackTop(MyStack* obj) 
+{
+    QueueNode * p=NULL;
+    if(myStackEmpty(obj))
+       return -1;
+    if(obj->ex.front!=NULL)
+    {
+       p=obj->ex.front;
+       ListReverse(&p);
+       obj->ex.front=p;
+       while(p->next!=NULL)
+       {
+           p=p->next;
+       }
+       obj->ex.rear=p;
+       obj->en.front=obj->ex.front;
+       obj->en.rear=obj->ex.rear;
+       obj->ex.front=obj->ex.rear=NULL;
+    }
+    return obj->en.rear->data;
+}
+
+void myStackFree(MyStack* obj) 
+{
+    QueueNode * p=NULL;
+    if(myStackEmpty(obj))
+      return ;
+    else
+    {
+        if(obj->en.front!=NULL)
+        {
+            while(obj->en.front!=NULL)
+            {
+                p=obj->en.front;
+                obj->en.front=obj->en.front->next;
+                free(p);
+            }
+        }
+        else
+        {
+            while(obj->ex.front!=NULL)
+            {
+                p=obj->ex.front;
+                obj->ex.front=obj->ex.front->next;
+                free(p);
+            }
+        }
+    }
+}
+
+20.有效的括号
+思路：利用栈的思想来进行匹配
+bool isValid(char * s)
+{
+    char s1[10000];
+    int n=0;
+    while(*s!='\0')
+    {
+       if(*s=='('||*s=='['||*s=='{')
+        {
+            s1[n++]=*s;
+            s++;
+        }
+       else if((*s==')'||*s==']'||*s=='}')&&n>0)//当*s为右括号左括号又存在时进行括号匹配
+       {
+            if(*s==')'&&s1[n-1]!='(')
+              return false;
+            else if(*s==']'&&s1[n-1]!='[')
+              return false;
+            else if(*s=='}'&&s1[n-1]!='{')
+              return false;
+            n--;
+            s++;
+       }
+       else if(n==0&&(*s==')'||*s==']'||*s=='}'))//没有左括号只输入右括号
+       {
+           return false;
+       }
+    }
+    if(n>0)//有多余的左括号
+    {
+        return false;
+    }
+    return true;
+}

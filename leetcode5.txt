@@ -10,6 +10,7 @@ typedef struct MyCircularQueue{
 MyCircularQueue* myCircularQueueCreate(int k) 
 {
     static MyCircularQueue p;
+//也可以MyCirlarQueue * obj=(MyCircularQueue*)malloc(sizeof(MyCircularQueue));这样就不用利用static，因为它直接在obj所指的位置开辟了循环队列
     MyCircularQueue * obj=NULL;
     p.capacity=k;
     p.base=(int *)malloc(sizeof(int)*(p.capacity+1));
@@ -81,7 +82,7 @@ void myCircularQueueFree(MyCircularQueue* obj)
      obj->capacity=obj->front=obj->rear=0;
 }
 
-232.用栈实现队列
+232.用栈实现队列//如果不使用reverse，则需要将出入栈严格限制，出栈为空要出栈则把入栈全导入出栈，若出栈有元素则直接出栈出，入栈则固定在入栈上。
 typedef struct StackNode
 {
     int data;
@@ -221,7 +222,7 @@ void myQueueFree(MyQueue* obj)
     }
 }
 
-225.用队列实现栈
+225.用队列实现栈 //也可以不利用转置，选择将队尾之前的元素入到另一个队列，然后单独出队最后一个元素，相当于后入先出
 typedef struct QueueNode
 {
     int data;
@@ -388,10 +389,10 @@ void myStackFree(MyStack* obj)
 }
 
 20.有效的括号
-思路：利用栈的思想来进行匹配
+思路：利用栈的思想来进行匹配,也可以创建栈然后用栈实现
 bool isValid(char * s)
 {
-    char s1[10000];
+    char s1[10000];//也可以利用malloc创建len长度的数组
     int n=0;
     while(*s!='\0')
     {
@@ -403,7 +404,7 @@ bool isValid(char * s)
        else if((*s==')'||*s==']'||*s=='}')&&n>0)//当*s为右括号左括号又存在时进行括号匹配
        {
             if(*s==')'&&s1[n-1]!='(')
-              return false;
+              return fa lse;
             else if(*s==']'&&s1[n-1]!='[')
               return false;
             else if(*s=='}'&&s1[n-1]!='{')
@@ -421,4 +422,38 @@ bool isValid(char * s)
         return false;
     }
     return true;
+}
+
+剑指offer56-I.数组中数字出现的次数 ****
+异或法、与、算数左移
+int* singleNumbers(int* nums, int numsSize, int* returnSize)
+{
+    int a=0,b=0;
+    int * arr=(int*)malloc(sizeof(int)*2);
+    int temp=0;
+    int h=1;//用来找到相异位
+    for(int i=0;i<numsSize;i++)
+    {
+        temp=temp^nums[i];
+    }//找到a^b的结果
+    //由于a和b一定不相等，则temp不为0，则a和b在二进制情况下某一位一定不同，那么需要找到不同位
+    while((temp&h)==0)//如果temp的该位不为1则h算术左移位
+    {
+        h<<=1;//h=h<<1;
+    }//找到了相异的第一位
+    for(int i=0;i<numsSize;i++)
+    {
+        if((h&nums[i])!=0)//将h位为1的为一组，若该组中的元素不为a、b单独元素则必会成对异或为0
+        {
+            a^=nums[i];
+        }
+        else
+        {
+            b^=nums[i];
+        }
+    }//利用h找到了a、b中对应h位为1的那个数
+    arr[0]=a;
+    arr[1]=b;
+    *returnSize=2;
+    return arr;
 }

@@ -1,0 +1,350 @@
+KY11 二叉树遍历 牛客
+思路：前序创建二叉树，中序遍历二叉树
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct BinTreeNode
+{
+   char data;
+   struct BinTreeNode * leftchild;
+   struct BinTreeNode * rightchild;
+}BinTreeNode;
+
+typedef BinTreeNode* BinTree;
+
+void BinTreeInit(BinTree*t)
+{
+    *t=NULL;
+}
+
+void BinTreeCreatePreOrder(BinTree*t)
+{
+    char item;
+    scanf("%c",&item);
+    if(item=='#')
+      *t=NULL;
+    else
+    {
+        *t=(BinTreeNode*)malloc(sizeof(BinTreeNode));
+        (*t)->data=item;
+        BinTreeCreatePreOrder(&((*t)->leftchild));
+        BinTreeCreatePreOrder(&((*t)->rightchild));
+    }
+}
+
+void BinTreeInOrder(BinTree t)
+{
+    if(t!=NULL)
+    {
+        BinTreeInOrder(t->leftchild);
+        printf("%c ",t->data);
+        BinTreeInOrder(t->rightchild);
+    }
+}
+int main()
+{
+    BinTree bt;
+    BinTreeInit(&bt);
+    BinTreeCreatePreOrder(&bt);
+    BinTreeInOrder(bt);
+}
+
+110.平衡二叉树
+思路一：逐结点比较左右子树高度差
+int Height(struct TreeNode*t)
+{
+    int l_h,r_h;
+    if(t==NULL)
+      return 0;
+    l_h=Height(t->left);
+    r_h=Height(t->right);
+    return (l_h>r_h?l_h:r_h)+1;
+}
+int _isBalanced(struct TreeNode*t,int *i)
+{
+    int l_h,r_h;
+    if(t==NULL)
+      return *i;
+    else
+    {
+        l_h=Height(t->left);
+        r_h=Height(t->right);
+        if(abs(l_h-r_h)<=1)
+           *i=*i;
+        else
+           (*i)++;
+        _isBalanced(t->left,i);
+        _isBalanced(t->right,i);
+    }
+    return *i;
+}
+
+bool isBalanced(struct TreeNode* root){
+     int i=0;
+     _isBalanced(root,&i);
+    if(i!=0)
+       return false;
+    else
+       return true;
+}
+
+572.另一棵树的子树
+思路一：将第一棵树的各结点作为根节点与第二棵树进行equal判断
+int _Equal(struct TreeNode* t1, struct TreeNode* t2,int * i)
+{
+	if (t1 == NULL && t2 != NULL)
+	{
+		(*i)++;
+		return *i;
+	}
+	else if (t1 != NULL && t2 == NULL)
+	{
+		(*i)++;
+		return *i;
+	}
+	else if(t1!=NULL&&t2!=NULL)
+	{
+		if (t1->val != t2->val)
+		{
+			(*i)++;
+			return *i;
+		}
+		_Equal(t1->left, t2->left,i);
+		_Equal(t1->right, t2->right,i);
+	}
+	return *i;
+}
+
+bool Equal(struct TreeNode* t1, struct TreeNode* t2)
+{
+	int i = 0;
+	i=_Equal(t1, t2,&i);
+	if (i == 0)
+		return true;
+	else
+		return false;
+}
+
+void _isSubtree(struct TreeNode*t1,struct TreeNode*t2,int*i)
+{
+    if(t1==NULL)
+      return;
+    if(Equal(t1,t2))
+        (*i)++;
+    else
+    {
+        _isSubtree(t1->left,t2,i);
+        _isSubtree(t1->right,t2,i);
+    }     
+}
+
+bool isSubtree(struct TreeNode* root, struct TreeNode* subRoot)
+{
+    int i=0;
+    _isSubtree(root,subRoot,&i);
+    if(i>0)
+      return true;
+    else
+      return false;     
+}
+
+145.二叉树的后序遍历
+思路：正常的后续遍历思路
+void _postorderTraversal(struct TreeNode* t, int* arr,int * i)
+{
+    if(t==NULL)
+      return;
+    else
+    {
+        _postorderTraversal(t->left,arr,i);
+        _postorderTraversal(t->right,arr,i);
+        arr[(*i)++]=t->val;
+    }
+}
+int* postorderTraversal(struct TreeNode* root, int* returnSize)
+{
+    int * arr=(int*)malloc(sizeof(int)*100);
+    *returnSize=0;
+    _postorderTraversal(root,arr,returnSize);
+    return arr;
+}
+
+94.二叉树的中序遍历
+思路：正常的中序遍历思路
+void _inorderTraversal(struct TreeNode* t,int*arr, int* i)
+{
+    if(t!=NULL)
+    {
+        _inorderTraversal(t->left,arr,i);
+        arr[(*i)++]=t->val;
+        _inorderTraversal(t->right,arr,i);
+    }
+}
+int* inorderTraversal(struct TreeNode* root, int* returnSize)
+{
+     int *arr=(int*)malloc(sizeof(int)*100);
+     *returnSize=0;
+     _inorderTraversal(root,arr,returnSize);
+     return arr;
+}
+
+144.二叉树的前序遍历
+思路：正常的前序遍历思路
+void _preorderTraversal(struct TreeNode* t, int* arr,int*i)
+{
+    if(t!=NULL)
+    {
+        arr[(*i)++]=t->val;
+        _preorderTraversal(t->left,arr,i);
+        _preorderTraversal(t->right,arr,i);
+    }
+}
+int* preorderTraversal(struct TreeNode* root, int* returnSize)
+{
+    int *arr=(int*)malloc(sizeof(int)*100);
+    *returnSize=0;
+    _preorderTraversal(root,arr,returnSize);
+    return arr;
+}
+
+101.对称二叉树
+思路:比较一个结点左子树与其对称结点的右子树，再比较其右子树和其对称结点的左子树，其中根节点自己与自己对称
+void _isSymmetric(struct TreeNode*l,struct TreeNode*r,int *i)
+{
+    if(l==NULL&&r==NULL)
+       return *i;
+    else if(l==NULL&&r!=NULL)
+       return ++(*i);
+    else if(l!=NULL&&r==NULL)
+       return ++(*i);
+    else
+    {
+        if(r->val!=l->val)
+            return ++(*i);
+        _isSymmetric(l->left,r->right,i);
+        _isSymmetric(l->right,r->left,i);
+    }
+}
+bool isSymmetric(struct TreeNode* root)
+{
+    int i=0;
+    _isSymmetric(root->left,root->right,&i);
+    if(i>0)
+      return false;
+    else
+      return true;
+}
+
+100.相同的树
+思路：两树一起遍历，设置判断变量，依靠其是否增长判断两树是否相同
+void _Equal(struct TreeNode* t1,struct TreeNode* t2,int * i)
+{
+	if (t1 == NULL && t2 != NULL)
+	{
+		(*i)++;
+		return;
+	}
+	else if (t1 != NULL && t2 == NULL)
+	{
+		(*i)++;
+		return;
+	}
+	else if(t1!=NULL&&t2!=NULL)
+	{
+		if (t1->val != t2->val)
+		{
+			(*i)++;
+			return;
+		}
+		_Equal(t1->left, t2->left,i);
+		_Equal(t1->right, t2->right,i);
+	}
+	return;
+}
+
+bool isSameTree(struct TreeNode* p, struct TreeNode* q)
+{
+    int i=0;
+    _Equal(p,q,&i);
+    if(i==0)
+      return true;
+    else
+      return false;
+}
+
+226.翻转二叉树
+思路：从根节点开始，依次交换对应结点的左右子树
+void _invertTree(struct TreeNode**l,struct TreeNode**r)
+{
+    struct TreeNode * p=NULL;
+    if(*l==NULL&&*r==NULL)
+       return;
+    else if(*l==NULL&&*r!=NULL)
+    {
+         p=*l;
+        *l=*r;
+        *r=p;
+        _invertTree(&((*l)->left),&((*l)->right));
+    }
+    else if(*l!=NULL&&*r==NULL)
+    {
+        p=*l;
+        *l=*r;
+        *r=p;
+        _invertTree(&((*r)->left),&((*r)->right));
+    }
+    else
+    {
+        p=*l;
+        *l=*r;
+        *r=p;
+        _invertTree(&((*l)->left),&((*l)->right));
+        _invertTree(&((*r)->left),&((*r)->right));
+    }
+}
+
+struct TreeNode* invertTree(struct TreeNode* root)
+{   
+    if(root==NULL)
+      return NULL;
+    _invertTree(&(root->left),&(root->right));
+    return root;
+}
+
+104.二叉树的最大深度
+思路：递归法求深度
+int maxDepth(struct TreeNode* root)
+{
+   if(root==NULL)
+     return 0;
+   int l_h,r_h;
+   l_h=maxDepth(root->left);
+   r_h=maxDepth(root->right);
+   return (l_h>r_h?l_h:r_h)+1;
+}
+
+965.单值二叉树
+思路：遍历二叉树，设置判断变量，依靠判断变量值是否变化确定二叉树是否为单值二叉树
+void _isUnivalTree(struct TreeNode*t,int * i,int k)
+{
+    if(t!=NULL)
+    {
+        if(t->val!=k)
+           (*i)++;
+        _isUnivalTree(t->left,i,k);
+        _isUnivalTree(t->right,i,k);
+    }
+}
+bool isUnivalTree(struct TreeNode* root)
+{
+    if(root==NULL)
+      return true;
+    int k=root->val;
+    int i=0;
+    _isUnivalTree(root,&i,k);
+    if(i>0)
+      return false;
+    else
+      return true;
+}

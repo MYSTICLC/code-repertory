@@ -89,6 +89,27 @@ bool isBalanced(struct TreeNode* root){
        return true;
 }
 
+思路二：
+int Height(struct TreeNode*t)
+{
+    int l_h,r_h;
+    if(t==NULL)
+      return 0;
+    l_h=Height(t->left);
+    r_h=Height(t->right);
+    return (l_h>r_h?l_h:r_h)+1;
+}
+
+bool isBalanced(struct TreeNode* root){
+    
+    if(root==NULL)
+      return true;
+    int l_h,r_h;
+    l_h=Height(root->left);
+    r_h=Height(root->right);
+    return (abs(l_h-r_h)<=1)&&(isBalanced(root->left))&&(isBalanced(root->right));
+}
+
 572.另一棵树的子树
 思路一：将第一棵树的各结点作为根节点与第二棵树进行equal判断
 int _Equal(struct TreeNode* t1, struct TreeNode* t2,int * i)
@@ -147,6 +168,25 @@ bool isSubtree(struct TreeNode* root, struct TreeNode* subRoot)
       return true;
     else
       return false;     
+}
+
+思路二：
+bool Equal(struct TreeNode* t1, struct TreeNode* t2)
+{
+	if(t1==NULL&&t2==NULL)
+       return true;
+    if(t1==NULL||t2==NULL)
+       return false;
+    return (t1->val==t2->val)&&Equal(t1->left,t2->left)&&Equal(t1->right,t2->right);
+}
+
+bool isSubtree(struct TreeNode* root, struct TreeNode* subRoot)
+{
+   if(root==NULL&&subRoot==NULL)
+      return true;
+   if(root==NULL||subRoot==NULL)
+      return false;
+   return Equal(root,subRoot)||isSubtree(root->left,subRoot)||isSubtree(root->right,subRoot);
 }
 
 145.二叉树的后序遍历
